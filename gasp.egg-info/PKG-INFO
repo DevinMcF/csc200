@@ -1,0 +1,26 @@
+Metadata-Version: 1.0
+Name: gasp
+Version: 0.1.0
+Summary: A set of easy to use tools for creating games in Python 3
+Home-page: https://gitlab.com/gasp-development-team/gasp-2020
+Author: Gasp Development Team
+Author-email: UNKNOWN
+License: gpl-3.0.md
+Description: # Graphics API for Students of Python (GASP)
+        
+        The goal of GASP is to provide an [immediate
+        mode](https://en.wikipedia.org/wiki/Immediate_mode_(computer_graphics)) library
+        for beginning Python programmers that supports both proceedural and
+        object-oriented programming paradigms.
+        
+        GASP allows first year programmers to develop 1980s style arcade games.
+        
+        # Install
+        
+        run the command
+        
+            $ python3 setup.py develop
+        
+        The current version of gasp is still unfinished, but in a usable state.
+        
+Platform: UNKNOWN
