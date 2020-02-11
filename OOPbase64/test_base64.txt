@@ -1,0 +1,85 @@
+Let's start by choosing three arbitrary bytes to convert into four base64
+digits. To reason using bits, here is a bit pattern:
+
+0101 1010 0010 1011 1110 0110
+
+In hex this is:
+
+5A2BE6
+
+We will want to read in 3 bytes at a time and convert them into 4 base64
+characters.
+
+Let's read them in from a BytesIO object.
+
+  >>> import io
+  >>> f = io.BytesIO(b"\x5A\x2B\xE6")
+  >>> three_bytes = f.read()
+  >>> type(three_bytes)
+  <class 'bytes'>
+  >>> len(three_bytes)
+  3
+
+Using https://en.wikipedia.org/wiki/Base64 as a guide, we can see that these
+3 bytes should be converted into the following 4 Base64 characters:
+
+010110 100010 101111 100110
+
+which maps to the following Base64 characters:
+
+Wivm
+
+Since the high order bits of each bytes will be set to 0s, we will have the
+following bytes:
+
+0001 0110 0010 0010 0010 1111 0010 0110 
+
+Let's write an end-to-end test for this whole process using a new Base64
+class.
+
+  >>> from base64 import Base64Converter 
+  >>> b64 = Base64Converter()
+  >>> b64.encode3bytes(three_bytes)
+  'Wivm'
+
+Working backwards from 'STOP' as the target output, add another test.
+
+Using the Base64 table on the Wikipeida page, we find that 'STOP' is
+
+010010 010011 001110 001111
+
+which rearranged into bytes is
+
+0100 1001 0011 0011 1000 1111
+
+which in Hex is 49338F, and we have our test.
+
+  >>> b64.encode3bytes(b'\x49\x33\x8F')
+  'STOP'
+
+The inverse adds another twist, which is that when a byte can be represented
+by a printable ASCII character, that is how Python represents it by default:
+
+  >>> b64.decode4chars('STOP')
+  b'I3\x8f'
+
+A very helpful resource for working with binary data in Python is:
+https://www.devdungeon.com/content/working-binary-data-python
+
+Now that we can convert back and forth between 3 bytes and 
+4 Base64 digits, our next task is to open a file containing bytes, read in
+3 bytes at a time, convert them into 4 Base64 digits (characters), and write
+them to another open text file.
+
+We'll use byte encoded text, to make evaluation and debugging easier.
+
+  >>> f1 = io.BytesIO(b'This is a test. It is only a test!')
+  >>> from base64 import Base64Converter
+  >>> b64 = Base64Converter()
+  >>> s = b64.encode(f1)
+  >>> s
+  'VGhpcyBpcyBhIHRlc3QuIEl0IGlzIG9ubHkgYSB0ZXN0IQ=='
+  >>> f2 = io.StringIO(s)
+  >>> bs = b64.decode(f2)
+  >>> bs
+  b'This is a test. It is only a test!'
